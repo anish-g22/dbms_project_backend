@@ -7,6 +7,7 @@ const exp = require("constants");
 
 const router = express.Router();
 
-router.get("/", studentController.getHome);
+router.get("/AllJobs", studentController.getHome);
+router.get("/auth", studentController.getAuth);
 
 module.exports = router;
