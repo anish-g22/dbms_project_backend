@@ -6,11 +6,17 @@ exports.getHome = (req, res, next) => {
     .execute("SELECT * FROM COMPANY")
     .then(([rows, fields]) => {
       console.log("Query Fields:\n");
-      console.log(fields);
 
-      console.log("Query Results:\n");
-      console.log(rows);
-      const data = {"rows": rows, "fields": fields}
+      col_names = [];
+      for (const [key, value] of fields.entries()) {
+        // console.log(key, value);
+        col_names.push(value.name);
+      }
+      console.log(col_names);
+
+      // console.log("Query Results:\n");
+      // console.log(rows);
+      const data = { fields: col_names, rows: rows };
       res.send(data);
     })
     .catch((err) => {
@@ -19,7 +25,30 @@ exports.getHome = (req, res, next) => {
   // res.render("index");
 };
 
-exports.getAuth = (req,res,next) =>{
+exports.getUpdates = (req, res, next) => {
+  pool
+    .execute("SELECT MID 'SNO', CONTENT 'Update' FROM MESSAGES")
+    .then(([rows, fields]) => {
+      console.log("Query Fields:\n");
+
+      col_names = [];
+      for (const [key, value] of fields.entries()) {
+        // console.log(key, value);
+        col_names.push(value.name);
+      }
+      console.log(col_names);
+
+      // console.log("Query Results:\n");
+      // console.log(rows);
+      const data = { fields: col_names, rows: rows };
+      res.send(data);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+exports.getAuth = (req, res, next) => {
   console.log("Auth Page Requested\n");
-  res.render('Auth/login');
+  res.render("Auth/login");
 };
