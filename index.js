@@ -21,6 +21,7 @@ const companyRoutes = require("./Routes/company");
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(express.static(path.join(__dirname, "public")));
 
+app.use("/update", authController.updatePass);
 app.post("/login", authController.postLogin);
 app.use(authController.is_auth);
 app.use("/s", authController.is_student, studentRoutes);
