@@ -9,5 +9,8 @@ const router = express.Router();
 
 router.get("/", studentController.getHome);
 router.get("/:id", studentController.getError);
+router.get("/AllJobs", studentController.getHome);
+router.get("/Updates", studentController.getUpdates);
+router.get("/auth", studentController.getAuth);
 
 module.exports = router;
