@@ -60,6 +60,30 @@ exports.getUpdates = (req, res, next) => {
     });
 };
 
+exports.getAllJobs = (req, res, next) => {
+  console.log("Hiiii")
+  pool
+    .execute("SELECT * FROM JOB")
+    .then(([rows, fields]) => {
+      console.log("Query Fields:\n");
+
+      col_names = [];
+      for (const [key, value] of fields.entries()) {
+        // console.log(key, value);
+        col_names.push(value.name);
+      }
+      console.log(col_names);
+
+      // console.log("Query Results:\n");
+      // console.log(rows);
+      const data = { fields: col_names, rows: rows };
+      res.send(data);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
 exports.getAuth = (req, res, next) => {
   console.log("Auth Page Requested\n");
   res.render("Auth/login");

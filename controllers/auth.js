@@ -1,6 +1,7 @@
 const pool = require("../util/connectionPool");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const tok_decode = require("jwt-decode");
 
 exports.postLogin = (req, res, next) => {
   console.log(req.headers);
@@ -8,21 +9,6 @@ exports.postLogin = (req, res, next) => {
   const user_pass = req.body.password;
   const user_role = req.body.role;
 
-  let tok = "";
-  let valid = false;
-  if (
-    req.headers.authorization != "" &&
-    req.headers.authorization != undefined
-  ) {
-    tok = req.headers.authorization.split(" ")[1];
-    jwt
-      .verify(tok, process.env.TOKEN_SECRET)
-      .then((result) => {
-        console.log("Token verified: \n", result);
-      })
-      .catch((err) => console.log(err));
-  }
-  
   pool
     .execute("SELECT * FROM USERS WHERE USER_ID = ? AND USER_ROLE = ?", [
       user_id,
@@ -59,25 +45,53 @@ exports.postLogin = (req, res, next) => {
 };
 
 exports.is_auth = (req, res, next) => {
-  console.log("Here\n");
-  valid = true;
-  if (valid) return next();
-  console.log("failed");
-  res.send("failed");
+  let tok = "";
+  let valid = false;
+  if (
+    req.headers.authorization != "" &&
+    req.headers.authorization != undefined
+  ) {
+    tok = req.headers.authorization.split(" ")[1];
+    if (tok != " " && tok != null) {
+      console.log("tok: ", tok);
+      jwt.verify(tok, process.env.TOKEN_SECRET, (err, result) => {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log("Token verified: \n", result);
+        req.body = tok_decode.jwtDecode(tok);
+        next();
+      });
+    } else return res.status(401).send({ status: "Unauthorized" });
+  }
 };
 
 exports.is_student = (req, res, next) => {
-  valid = false;
-  if (!valid) return next();
-  //   console.log("failed");
-  //   res.send("failed");
+  console.log("check", req.body);
+
+  if (req.body.user_role != "student") {
+    return res.status(401).send({ status: "Unauthorized" });
+  }
+  next();
 };
 
 exports.is_company = (req, res, next) => {
-  valid = true;
-  if (valid) return next();
-  console.log("failed");
-  res.send("failed");
+  console.log("check", req.body);
+
+  if (req.body.user_role != "company") {
+    return res.status(401).send({ status: "Unauthorized" });
+  }
+  next();
+};
+
+exports.is_admin = (req, res, next) => {
+  console.log("check", req.body);
+
+  if (req.body.user_role != "admin") {
+    return res.status(401).send({ status: "Unauthorized" });
+  }
+  next();
 };
 
 exports.updatePass = (req, res, next) => {
