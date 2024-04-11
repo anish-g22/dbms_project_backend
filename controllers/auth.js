@@ -71,7 +71,9 @@ exports.is_student = (req, res, next) => {
   console.log("check", req.body);
 
   if (req.body.user_role != "student") {
-    return res.status(401).send({ status: "Unauthorized" });
+    return res
+      .status(401)
+      .send({ role: req.body.user_role, status: "invalid" });
   }
   next();
 };
@@ -80,7 +82,9 @@ exports.is_company = (req, res, next) => {
   console.log("check", req.body);
 
   if (req.body.user_role != "company") {
-    return res.status(401).send({ status: "Unauthorized" });
+    return res
+      .status(401)
+      .send({ role: req.body.user_role, status: "invalid" });
   }
   next();
 };
@@ -89,7 +93,9 @@ exports.is_admin = (req, res, next) => {
   console.log("check", req.body);
 
   if (req.body.user_role != "admin") {
-    return res.status(401).send({ status: "Unauthorized" });
+    return res
+      .status(401)
+      .send({ role: req.body.user_role, status: "invalid" });
   }
   next();
 };
