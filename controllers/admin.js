@@ -1,8 +1,9 @@
 const pool = require("../util/connectionPool");
 
-exports.getHome = (req,res,next)=>{
-    return res.send({status:"valid"});
-}
+exports.getHome = (req, res, next) => {
+  console.log("Connection to admin path established succesfully");
+  return res.status(200).send({ status: "valid" , role: "admin" });
+};
 
 exports.getAllStudents = (req, res, next) => {
   console.log("Connection to /a/students path established succesfully");

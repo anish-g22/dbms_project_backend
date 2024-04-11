@@ -63,7 +63,7 @@ exports.is_auth = (req, res, next) => {
         req.body = tok_decode.jwtDecode(tok);
         next();
       });
-    } else return res.status(401).send({ status: "Unauthorized" });
+    } else return res.status(200).send({ status: "Unauthorized" });
   }
 };
 
@@ -72,7 +72,7 @@ exports.is_student = (req, res, next) => {
 
   if (req.body.user_role != "student") {
     return res
-      .status(401)
+      .status(200)
       .send({ role: req.body.user_role, status: "invalid" });
   }
   next();
@@ -83,7 +83,7 @@ exports.is_company = (req, res, next) => {
 
   if (req.body.user_role != "company") {
     return res
-      .status(401)
+      .status(200)
       .send({ role: req.body.user_role, status: "invalid" });
   }
   next();
@@ -94,7 +94,7 @@ exports.is_admin = (req, res, next) => {
 
   if (req.body.user_role != "admin") {
     return res
-      .status(401)
+      .status(200)
       .send({ role: req.body.user_role, status: "invalid" });
   }
   next();
