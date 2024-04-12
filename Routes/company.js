@@ -8,6 +8,7 @@ const exp = require("constants");
 const router = express.Router();
 
 router.get("/", companyController.getHome);
+router.get("/jobs", companyController.getMyJobs);
 router.get("/application", companyController.getApplication);
 router.get("/profile", companyController.getProfile);
 

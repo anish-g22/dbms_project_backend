@@ -2,7 +2,12 @@ const pool = require("../util/connectionPool");
 
 exports.getHome = (req, res, next) => {
   console.log("COMPANY JOBS");
+  return res.status(200).send({ status: "valid", role: "admin" });
+};
+
+exports.getMyJobs = (req,res,next)=>{
   const cid = req.body.user_id;
+  console.log("COMPANY JOBS");
   pool
     .execute("SELECT * FROM JOB WHERE cid = ?", [cid])
     .then(([rows, fields]) => {
@@ -13,7 +18,7 @@ exports.getHome = (req, res, next) => {
     .catch((err) => {
       console.error(err);
     });
-};
+}
 
 exports.getApplication = (req, res, next) => {};
 
