@@ -1,4 +1,5 @@
 const pool = require("../util/connectionPool");
+const jwt = require('jsonwebtoken');
 
 exports.getHome = (req, res, next) => {
   console.log("Connection to student path established succesfully");
@@ -69,6 +70,34 @@ exports.getAllJobs = (req, res, next) => {
     .catch((err) => {
       console.error(err);
     });
+};
+
+exports.getStudentProfiles = (req, res, next) => {
+
+  console.log("Student Profile Requested\n");
+
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    throw new Error('Authorization header not found');
+  }
+
+  const token = authHeader.split(' ')[1];
+  const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+  const sroll = decodedToken.user_id || null;  
+
+  pool
+    .execute("SELECT * FROM STUDENT WHERE SROLL = ?", [sroll])
+    .then(([rows, fields]) => {
+
+      const data = rows[0];
+
+      res.send(data);
+      console.log(data);
+    })
+    .catch((err) => {
+      console.error(err);
+    })
 };
 
 exports.getAuth = (req, res, next) => {

@@ -11,5 +11,6 @@ router.get("/", studentController.getHome);
 router.get("/AllJobs", studentController.getAllJobs);
 router.get("/Updates", studentController.getUpdates);
 router.get("/auth", studentController.getAuth);
+router.get("/user", studentController.getStudentProfiles);
 
 module.exports = router;
