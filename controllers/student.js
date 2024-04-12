@@ -2,7 +2,7 @@ const pool = require("../util/connectionPool");
 
 exports.getHome = (req, res, next) => {
   console.log("Connection to student path established succesfully");
-  return res.status(200).send({ status: "valid" , role: "student" });
+  return res.status(200).send({ status: "valid", role: "student" });
 };
 
 exports.getError = (req, res, next) => {
@@ -48,9 +48,11 @@ exports.getUpdates = (req, res, next) => {
 };
 
 exports.getAllJobs = (req, res, next) => {
-  console.log("Hiiii")
+  console.log("Hiiii");
   pool
-    .execute("SELECT * FROM JOB")
+    .execute(
+      "SELECT JID ID , JROLE Role, JSAL 'Monthly Salary', Jdesc Description FROM JOB WHERE JSTATUS = 'approved'"
+    )
     .then(([rows, fields]) => {
       console.log("Query Fields:\n");
 
@@ -69,6 +71,47 @@ exports.getAllJobs = (req, res, next) => {
     .catch((err) => {
       console.error(err);
     });
+};
+
+exports.getEligibleJobs = (req, res, next) => {
+  const user_id = req.body.user_id;
+  pool
+    .execute("SELECT * FROM STUDENT WHERE sroll = ?", [user_id])
+    .then(([rows, fields]) => {
+      // col_names = [];
+      // for (const [key, value] of fields.entries()) {
+      //   col_names.push(value.name);
+      // }
+      // const data = { fields: col_names, rows: rows };
+      // console.log(data);
+      // // res.send(data);
+      return pool.execute(
+        "SELECT JID FROM ELIGIBILITY WHERE CGPA<=? AND BR_ID = ? AND PR_ID = ?",
+        [rows[0].CGPA, rows[0].BR_ID, rows[0].PR_ID]
+      );
+    })
+    .then(([rows, fields]) => {
+      console.log("rows", rows);
+      jids = rows.map((val) => val.JID);
+      console.log("jids", jids);
+      const placeholders = jids.map(() => "?").join(",");
+      return pool.execute(
+        `SELECT JID ID , JROLE Role, 
+      JSAL 'Monthly Salary', Jdesc Description 
+      FROM JOB WHERE JSTATUS = 'approved' AND JID IN (${placeholders})`,
+        jids
+      );
+    })
+    .then(([rows, fields]) => {
+      col_names = [];
+      for (const [key, value] of fields.entries()) {
+        col_names.push(value.name);
+      }
+      const data = { fields: col_names, rows: rows };
+      console.log(data);
+      res.send(data);
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getAuth = (req, res, next) => {

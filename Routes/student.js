@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.get("/", studentController.getHome);
 router.get("/AllJobs", studentController.getAllJobs);
+router.get("/eligibleJobs", studentController.getEligibleJobs);
 router.get("/Updates", studentController.getUpdates);
 router.get("/auth", studentController.getAuth);
 
