@@ -9,6 +9,14 @@ const router = express.Router();
 
 router.get("/", adminController.getHome);
 router.get("/allStudents", adminController.getAllStudents);
-router.get("/profile", adminController.getMyDetails);
+router.get("/allJobs", adminController.getAllJobs);
+router.get("/approvedJobs", adminController.getApprovedJobs);
+router.get("/pendingJobs", adminController.getPendingJobs);
+// router.get("/interviews", adminController.getInterviews);
+router.get("/updates", adminController.getUpdates);
+router.get("/profile", adminController.getAdminProfile);
+
+router.post("/updates", adminController.postUpdates);
+router.post("/updateProfile", adminController.postUpdateProfile);
 
 module.exports = router;

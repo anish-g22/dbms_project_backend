@@ -2,7 +2,7 @@ const pool = require("../util/connectionPool");
 
 exports.getHome = (req, res, next) => {
   console.log("Connection to admin path established succesfully");
-  return res.status(200).send({ status: "valid" , role: "admin" });
+  return res.status(200).send({ status: "valid", role: "admin" });
 };
 
 exports.getAllStudents = (req, res, next) => {
@@ -10,46 +10,86 @@ exports.getAllStudents = (req, res, next) => {
   pool
     .execute("SELECT * FROM ADMINISTRATOR")
     .then(([rows, fields]) => {
-        console.log("Query Fields:\n");
-
-        col_names = [];
-        for (const [key, value] of fields.entries()) {
-          // console.log(key, value);
-          col_names.push(value.name);
-        }
-        console.log(col_names);
-
-      console.log("Query Results:\n");
-      console.log(rows);
+      col_names = fields.map((val) => val.name);
       const data = { fields: col_names, rows: rows };
-      res.send(data);
+      res.status(200).send(data);
     })
     .catch((err) => {
       console.error(err);
     });
 };
 
-exports.getMyDetails = (req, res, next) => {
-    console.log("Connection to /a/profile path established succesfully");
-    const aid = req.body.user_id;
-    pool
-      .execute("SELECT * FROM ADMINISTRATOR WHERE aid = ?",[aid])
-      .then(([rows, fields]) => {
-        console.log("Query Fields:\n");
-
-        col_names = [];
-        for (const [key, value] of fields.entries()) {
-          // console.log(key, value);
-          col_names.push(value.name);
-        }
-        console.log(col_names);
-
-      console.log("Query Results:\n");
-      console.log(rows);
+exports.getAdminProfile = (req, res, next) => {
+  console.log("Connection to /a/profile path established succesfully");
+  const aid = req.body.user_id;
+  pool
+    .execute("SELECT * FROM ADMINISTRATOR WHERE aid = ?", [aid])
+    .then(([rows, fields]) => {
+      col_names = fields.map((val) => val.name);
       const data = { fields: col_names, rows: rows };
-      res.send(data);
-      })
-      .catch((err) => {
-        console.error(err);
-      });   
-}
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+exports.getAllJobs = (req, res, next) => {
+  console.log("Admin ALL JOBS");
+  pool
+    .execute("SELECT * FROM JOB")
+    .then(([rows, fields]) => {
+      col_names = fields.map((val) => val.name);
+      const data = { fields: col_names, rows: rows };
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+exports.getApprovedJobs = (req, res, next) => {
+  console.log("Admin Approved JOBS");
+  pool
+    .execute("SELECT * FROM JOB WHERE Jstatus = 'approved'")
+    .then(([rows, fields]) => {
+      col_names = fields.map((val) => val.name);
+      const data = { fields: col_names, rows: rows };
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+exports.getPendingJobs = (req, res, next) => {
+  console.log("Admin Pending JOBS");
+  pool
+    .execute("SELECT * FROM JOB WHERE Jstatus = 'pending'")
+    .then(([rows, fields]) => {
+      col_names = fields.map((val) => val.name);
+      const data = { fields: col_names, rows: rows };
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+exports.getUpdates = (req, res, next) => {
+  console.log("Admin Messages");
+  pool
+    .execute("SELECT * FROM MESSAGES")
+    .then(([rows, fields]) => {
+      col_names = fields.map((val) => val.name);
+      const data = { fields: col_names, rows: rows };
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+exports.postUpdates = (req, res, next) => {};
+
+exports.postUpdateProfile = (req, res, next) => {};
