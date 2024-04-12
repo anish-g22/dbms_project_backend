@@ -100,6 +100,7 @@ exports.getStudentProfiles = (req, res, next) => {
     .catch((err) => {
       console.error(err);
     })
+};
 
 exports.getEligibleJobs = (req, res, next) => {
   const user_id = req.body.user_id;
