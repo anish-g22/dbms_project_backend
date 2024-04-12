@@ -111,7 +111,26 @@ exports.getEligibleJobs = (req, res, next) => {
       console.log(data);
       res.send(data);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send({ status: "Inavlid Request to Databse" });
+    });
+};
+
+exports.getAppliedJobs = (req, res, next) => {
+  console.log("Get Applied Jobs\n");
+  pool
+    .execute("SELECT * FROM APPLICATION WHERE SROLL = ?", [req.body.user_id])
+    .then(([rows, fields]) => {
+      col_names = fields.map((val) => val.name);
+      const data = { fields: col_names, rows: rows };
+      console.log(data);
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send({ status: "Inavlid Request to Databse" });
+    });
 };
 
 exports.getAuth = (req, res, next) => {
