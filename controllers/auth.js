@@ -60,7 +60,8 @@ exports.is_auth = (req, res, next) => {
           return;
         }
         console.log("Token verified: \n", result);
-        req.body = tok_decode.jwtDecode(tok);
+        const temp = tok_decode.jwtDecode(tok);
+        req.body = {...req.body, ...temp};
         next();
       });
     } else return res.status(200).send({ status: "Unauthorized" });

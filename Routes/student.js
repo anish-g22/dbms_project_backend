@@ -15,4 +15,7 @@ router.get("/Updates", studentController.getUpdates);
 router.get("/auth", studentController.getAuth);
 router.get("/user", studentController.getStudentProfiles);
 
+router.post("/updateProfile", studentController.postStudentProfile);
+
 module.exports = router;
+

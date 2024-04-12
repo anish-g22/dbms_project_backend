@@ -1,5 +1,5 @@
 const pool = require("../util/connectionPool");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 exports.getHome = (req, res, next) => {
   console.log("Connection to student path established succesfully");
@@ -75,23 +75,12 @@ exports.getAllJobs = (req, res, next) => {
 };
 
 exports.getStudentProfiles = (req, res, next) => {
-
   console.log("Student Profile Requested\n");
 
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    throw new Error('Authorization header not found');
-  }
-
-  const token = authHeader.split(' ')[1];
-  const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-  const sroll = decodedToken.user_id || null;  
-
+  const sroll = req.body.user_id;
   pool
     .execute("SELECT * FROM STUDENT WHERE SROLL = ?", [sroll])
     .then(([rows, fields]) => {
-
       const data = rows[0];
 
       res.send(data);
@@ -99,7 +88,26 @@ exports.getStudentProfiles = (req, res, next) => {
     })
     .catch((err) => {
       console.error(err);
+    });
+};
+
+exports.postStudentProfile = (req, res, next) => {
+  const sroll = req.body.user_id;
+  const email = req.body.EMAIL;
+  const linkedin = req.body.LINKEDIN;
+  const resume = req.body.RESUME;
+  const github = req.body.GITHUB;
+  const about = req.body.ABOUT;
+  console.log(req.body);
+  pool
+    .execute(
+      'UPDATE STUDENT SET LINKEDIN = ? , EMAIL = ? , RESUME = ? , GITHUB = ? , ABOUT = ? WHERE SROLL = ?',
+      [linkedin, email, resume, github, about, sroll]
+    )
+    .then(([rows, fields]) => {
+      res.status(200).send({ status: "Updated Successfully" });
     })
+    .catch((err) => console.log(err));
 };
 
 exports.getEligibleJobs = (req, res, next) => {
