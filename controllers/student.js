@@ -163,5 +163,6 @@ exports.getAuth = (req, res, next) => {
 };
 
 exports.postApply = (req, res, next) => {
-  
+  console.log(req.body);
+  console.log("Hi")
 };
