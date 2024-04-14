@@ -65,7 +65,9 @@ exports.getApprovedJobs = (req, res, next) => {
 exports.getPendingJobs = (req, res, next) => {
   console.log("Admin Pending JOBS");
   pool
-    .execute("SELECT * FROM JOB WHERE Jstatus = 'pending'")
+    .execute(
+      "SELECT JID ID, JSAL 'MONTHLY SALARY', JDESC DESCRIPTION, CONCAT(JDUR, ' Months') DURATION, JSTART START FROM JOB WHERE Jstatus = 'pending'"
+    )
     .then(([rows, fields]) => {
       col_names = fields.map((val) => val.name);
       const data = { fields: col_names, rows: rows };
@@ -93,3 +95,25 @@ exports.getUpdates = (req, res, next) => {
 exports.postUpdates = (req, res, next) => {};
 
 exports.postUpdateProfile = (req, res, next) => {};
+
+exports.postApproveJob = (req, res, next) => {
+  console.log("ADMIN Approve Job");
+  console.log(req.body);
+  pool
+    .execute("UPDATE job SET jstatus = 'approved' WHERE jid = ?", [
+      req.body.jid,
+    ])
+    .then(([rows, fields]) => {console.log("job updated")})
+    .catch((err) => console.log(err));
+};
+
+exports.postRejectJob = (req, res, next) => {
+  console.log("ADMIN Reject Job");
+  console.log(req.body);
+  pool
+    .execute("UPDATE job SET jstatus = 'on hold' WHERE jid = ?", [
+      req.body.jid,
+    ])
+    .then(([rows, fields]) => {console.log("job updated")})
+    .catch((err) => console.log(err));
+};

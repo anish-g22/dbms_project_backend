@@ -57,10 +57,10 @@ exports.getApplication = (req, res, next) => {
 exports.getBranches = (req, res, next) => {
   console.log("COMPANY BRANCHES");
   pool
-    .execute("SELECT BR_NAME FROM BRANCH")
+    .execute("SELECT * FROM BRANCH")
     .then(([rows, fields]) => {
-      rows = rows.map((val) => val.BR_NAME);
-      const data = {rows: rows };
+      // rows = rows.map((val) => val.BR_NAME);
+      const data = { rows: rows };
       res.status(200).send(data);
     })
     .catch((err) => {
@@ -71,7 +71,30 @@ exports.getBranches = (req, res, next) => {
 exports.postUpdateProfile = (req, res, next) => {};
 
 exports.postJob = (req, res, next) => {
-  console.log("Hey")
+  console.log("Hey");
   console.log(req.body);
-  res.status(200).send({ status: "Sucessfully sent job details" });
+  const jrole = req.body.JobRole;
+  const jsal = req.body.JobSalary;
+  const jdesc = req.body.JobDescription;
+  const jstart = req.body.JobStartDate;
+  const jdur = req.body.JobDuration;
+  const cgpa = req.body.MinimumCGPA;
+  const maxArr = req.body.MaximumArrears;
+  const branches = req.body.Branches;
+  const gender = req.body.Gender;
+  const cid = req.body.user_id;
+  return res.status(200).send({ status: "Sucessfully sent job details" });
+  pool
+    .execute(
+      "INSERT INTO JOB (CID, JROLE, JSAL, JDESC, JSTART, JDUR, JSTATUS) VALUES (?,?,?,?,?,?)",
+      [cid, jrole, jsal, jdesc, jstart, jdur, "pending"]
+    )
+    .then(([rows, fields]) => {
+      console.log(rows);
+      return pool.execute("INSERT INTO ELIGIBILITY VALUES (?,?,?)", []);
+    })
+    .then(([rows, fields]) => {
+      res.status(200).send({ status: "Succesffully Inserted new job" });
+    })
+    .catch((err) => console.log(err));
 };
