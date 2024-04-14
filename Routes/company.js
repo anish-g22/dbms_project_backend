@@ -11,8 +11,9 @@ router.get("/", companyController.getHome);
 router.get("/jobs", companyController.getMyJobs);
 router.get("/application", companyController.getApplication);
 router.get("/profile", companyController.getProfile);
+router.get("/branches", companyController.getBranches);
 
 router.post("/updateProfile", companyController.postUpdateProfile);
-router.post("/addJob", companyController.postJob);
+router.post("/addjob", companyController.postJob);
 
 module.exports = router;

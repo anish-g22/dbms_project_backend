@@ -80,7 +80,7 @@ exports.is_student = (req, res, next) => {
 };
 
 exports.is_company = (req, res, next) => {
-  console.log("check", req.body);
+  console.log("check company", req.body);
 
   if (req.body.user_role != "company") {
     return res
