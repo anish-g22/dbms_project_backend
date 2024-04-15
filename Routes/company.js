@@ -12,6 +12,9 @@ router.get("/jobs", companyController.getMyJobs);
 router.get("/application", companyController.getApplication);
 router.get("/profile", companyController.getProfile);
 router.get("/branches", companyController.getBranches);
+router.get("/applicants", companyController.getApplicants);
+router.get("/interviews", companyController.getInterviews);
+
 
 router.post("/updateProfile", companyController.postUpdateProfile);
 router.post("/addjob", companyController.postJob);

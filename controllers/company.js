@@ -70,6 +70,36 @@ exports.getBranches = (req, res, next) => {
 
 exports.postUpdateProfile = (req, res, next) => {};
 
+exports.getApplicants = (req, res, next) => {
+  console.log('getApplicants');
+  const jid = req.body.ID;
+  pool
+    .execute("SELECT * FROM APPLICATION WHERE JID = ?",[jid])
+    .then(([rows, fields]) => {
+      col_names = fields.map((val) => val.name);
+      const data = { rows: rows , fields: col_names };
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+exports.getInterviews = (req, res, next) => {
+  console.log('getInterviews');
+  const jid = req.body.ID;
+  pool
+    .execute("SELECT * FROM INTERVIEW WHERE JID = ?",[jid])
+    .then(([rows, fields]) => {
+      col_names = fields.map((val) => val.name);
+      const data = { rows: rows , fields: col_names };
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 exports.postJob = (req, res, next) => {
   console.log("Hey");
   console.log(req.body);
