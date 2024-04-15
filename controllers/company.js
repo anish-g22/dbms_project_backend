@@ -70,14 +70,15 @@ exports.getBranches = (req, res, next) => {
 
 exports.postUpdateProfile = (req, res, next) => {};
 
-exports.getApplicants = (req, res, next) => {
-  console.log('getApplicants');
-  const jid = req.body.ID;
+exports.postApplicants = (req, res, next) => {
+  console.log('postApplicants');
+  const jid = req.body.JID;
   pool
     .execute("SELECT * FROM APPLICATION WHERE JID = ?",[jid])
     .then(([rows, fields]) => {
       col_names = fields.map((val) => val.name);
       const data = { rows: rows , fields: col_names };
+      console.log(data);
       res.status(200).send(data);
     })
     .catch((err) => {
@@ -125,6 +126,19 @@ exports.postJob = (req, res, next) => {
     })
     .then(([rows, fields]) => {
       res.status(200).send({ status: "Succesffully Inserted new job" });
+    })
+    .catch((err) => console.log(err));
+};
+
+exports.postStudentList = (req, res, next) => {
+  console.log("Post request for Students List");
+  console.log(req.body);
+  const jid = req.body.jid;
+  pool
+    .execute("SELECT * FROM JOB WHERE JID = ?", [jid])
+    .then(([rows, fields]) => {
+      console.log(rows);
+      res.status(200).send({ status: "Succesffully sent job applicants" });
     })
     .catch((err) => console.log(err));
 };
