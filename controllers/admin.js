@@ -90,6 +90,22 @@ exports.getUpdates = (req, res, next) => {
     });
 };
 
-exports.postUpdates = (req, res, next) => {};
+exports.postUpdates = (req, res, next) => {
+  console.log("Connected to post messages");
+
+  const aid = req.body.user_id;
+  const content = req.body.CONTENT;
+  const title = req.body.TITLE;
+  const link = req.body.LINK;
+
+  pool
+    .execute("INSERT INTO MESSAGES (TITLE, CONTENT, LINK, AID) VALUES (?, ?, ?, ?)", [title, content, link, aid])
+    .then(([rows, fields]) => {
+      res.status(200).send({ status: "inserted" });
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
 
 exports.postUpdateProfile = (req, res, next) => {};
