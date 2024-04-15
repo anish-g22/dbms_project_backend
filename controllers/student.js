@@ -105,9 +105,9 @@ exports.getEligibleJobs = (req, res, next) => {
       console.log("jids", jids);
       const placeholders = jids.map(() => "?").join(",");
 
-      if(!jids.length){
-        col_names = ["ID", "Role", "Monthly Salary", "Description"]
-        const data = {fields: col_names, rows:[]}
+      if (!jids.length) {
+        col_names = ["ID", "Role", "Monthly Salary", "Description"];
+        const data = { fields: col_names, rows: [] };
         return res.status(200).send(data);
       }
       return pool.execute(
@@ -164,5 +164,15 @@ exports.getAuth = (req, res, next) => {
 
 exports.postApply = (req, res, next) => {
   console.log(req.body);
-  console.log("Hi")
+  console.log("Student Apply");
+  pool
+    .execute(
+      'INSERT INTO APPLICATION (SROLL, JID, APP_STATUS) VALUES (?, ?, "pending")',
+      [req.body.user_id, req.body.jid]
+    )
+    .then(([rows, fields]) => {
+      console.log(rows)
+      res.status(200).send({ status: "Applied Successfully" });
+    })
+    .catch(err=>console.log(err));
 };

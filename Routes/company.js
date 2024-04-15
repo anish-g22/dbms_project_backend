@@ -11,8 +11,13 @@ router.get("/", companyController.getHome);
 router.get("/jobs", companyController.getMyJobs);
 router.get("/application", companyController.getApplication);
 router.get("/profile", companyController.getProfile);
+router.get("/branches", companyController.getBranches);
+router.get("/interviews", companyController.getInterviews);
 
 router.post("/updateProfile", companyController.postUpdateProfile);
-router.post("/addJob", companyController.postJob);
+router.post("/addjob", companyController.postJob);
+router.post("/addjob", companyController.postJob);
+router.post("/studentslist", companyController.postStudentList);
+router.post("/applicants", companyController.postApplicants);
 
 module.exports = router;
