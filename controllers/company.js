@@ -120,7 +120,7 @@ exports.postJob = (req, res, next) => {
     str += element;
     str += ",";
   });
-  str = str.slice(0,-1);
+  str = str.slice(0, -1);
   console.log(str);
 
   let Gen = "";
@@ -157,20 +157,44 @@ exports.postJob = (req, res, next) => {
 exports.getApplicants = (req, res, next) => {
   console.log("Post request for Students List");
   console.log(req.body);
-  const jid = req.body.jid;
+  const jid = req.body.JID;
   pool
     .execute("SELECT * FROM APPLICATION WHERE JID = ?", [jid])
     .then(([rows, fields]) => {
       console.log(rows);
-      res.status(200).send({ status: "Succesffully sent job applicants" });
+      col_names = fields.map(field =>field.name);
+      res.status(200).send({rows: rows, fields: col_names});
     })
     .catch((err) => console.log(err));
 };
 
-exports.getInterviewDetails = (req,res,next)=>{
-  console.log("Post request for Interview Details")
-  console.log(req,body);
+exports.getInterviewDetails = (req, res, next) => {
+  console.log("Post request for Interview Details");
+  console.log(req.body);
   const jid = req.body.JID;
-  return res.status(200).send({status:"Valid"});
-  // pool.execute()
-}
+  // return res.status(200).send({status:"Valid"});
+  pool
+    .execute("SELECT IDATE INTERVIEW_DATE, ITIME INTERVIEW_TIME FROM JOB WHERE JID = ?", [jid])
+    .then(([rows,fields]) => {
+      console.log(typeof(rows[0].INTERVIEW_DATE));
+      rows[0].INTERVIEW_DATE = rows[0].INTERVIEW_DATE.toISOString().slice(0,-14);
+      res.status(200).send(rows[0]);
+    })
+    .catch((err) => console.log(err));
+};
+
+exports.postInterviewDetails = (req, res, next) => {
+  console.log("Post request for Updating Interview Details");
+  console.log(req.body);
+  const jid = req.body.user_id;
+  const itime = req.body.INTERVIEW_TIME;
+  const idate = req.body.INTERVIEW_DATE;
+  // return res.status(200).send({ status: "Valid" });
+  pool
+    .execute("UPDATE JOB SET IDATE = ?, ITIME = ? WHERE JID = ?", [idate, itime, jid])
+    .then(([rows,fields]) => {
+      console.log(rows);
+      res.status(200).send({status:"Interview Details Updated Successfully"});
+    })
+    .catch((err) => console.log(err));
+};

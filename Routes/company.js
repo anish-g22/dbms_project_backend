@@ -18,6 +18,7 @@ router.post("/updateProfile", companyController.postUpdateProfile);
 router.post("/addjob", companyController.postJob);
 router.post("/studentslist", companyController.getApplicants);
 router.post("/interviewdetails", companyController.getInterviewDetails);
+router.post("/updateinterviewdetails", companyController.postInterviewDetails);
 router.post("/applicants", companyController.postApplicants);
 
 module.exports = router;
