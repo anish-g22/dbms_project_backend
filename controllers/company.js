@@ -101,49 +101,6 @@ exports.getInterviews = (req, res, next) => {
     });
 };
 
-exports.postJob = (req, res, next) => {
-  console.log("Hey");
-  console.log(req.body);
-  const jrole = req.body.JobRole;
-  const jsal = req.body.JobSalary;
-  const jdesc = req.body.JobDescription;
-  const jstart = req.body.JobStartDate;
-  const jdur = req.body.JobDuration;
-  const cgpa = req.body.MinimumCGPA;
-  const maxArr = req.body.MaximumArrears;
-  const branches = req.body.Branches;
-  const gender = req.body.Gender;
-  const cid = req.body.user_id;
-  return res.status(200).send({ status: "Sucessfully sent job details" });
 
-  // let jid;
-  // pool
-  //   .execute("SELECT MAX(JID) FROM JOB");
 
-  pool
-    .execute(
-      "INSERT INTO JOB (CID, JROLE, JSAL, JDESC, JSTART, JDUR, JSTATUS) VALUES (?,?,?,?,?,?)",
-      [cid, jrole, jsal, jdesc, jstart, jdur, "pending"]
-    )
-    .then(([rows, fields]) => {
-      console.log(rows);
-      return pool.execute("INSERT INTO ELIGIBILITY VALUES (?,?,?)", []);
-    })
-    .then(([rows, fields]) => {
-      res.status(200).send({ status: "Succesffully Inserted new job" });
-    })
-    .catch((err) => console.log(err));
-};
 
-exports.postStudentList = (req, res, next) => {
-  console.log("Post request for Students List");
-  console.log(req.body);
-  const jid = req.body.jid;
-  pool
-    .execute("SELECT * FROM JOB WHERE JID = ?", [jid])
-    .then(([rows, fields]) => {
-      console.log(rows);
-      res.status(200).send({ status: "Succesffully sent job applicants" });
-    })
-    .catch((err) => console.log(err));
-};

@@ -15,6 +15,7 @@ router.get("/pendingJobs", adminController.getPendingJobs);
 // router.get("/interviews", adminController.getInterviews);
 router.get("/updates", adminController.getUpdates);
 router.get("/profile", adminController.getAdminProfile);
+router.get("/AllOffers", adminController.getOffers);
 
 router.post("/updates", adminController.postUpdates);
 router.post("/removeUpdate", adminController.removeUpdate);

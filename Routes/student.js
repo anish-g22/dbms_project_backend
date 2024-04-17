@@ -15,7 +15,7 @@ router.get("/interviews", studentController.getInterviews);
 router.get("/updates", studentController.getUpdates);
 router.get("/auth", studentController.getAuth);
 router.get("/user", studentController.getStudentProfiles);
-
+router.get("/offers", studentController.getStudentOffers);
 router.post("/updateProfile", studentController.postStudentProfile);
 router.post("/apply", studentController.postApply);
 
