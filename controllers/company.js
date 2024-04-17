@@ -118,7 +118,9 @@ exports.postJob = (req, res, next) => {
   let str = "";
   branches.forEach((element) => {
     str += element;
+    str += ",";
   });
+  str = str.slice(0,-1);
   console.log(str);
 
   let Gen = "";
