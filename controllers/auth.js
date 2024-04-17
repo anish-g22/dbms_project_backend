@@ -44,6 +44,27 @@ exports.postLogin = (req, res, next) => {
   // res.json({ token: "authenticated" });
 };
 
+exports.postSignup = (req, res, next) => {
+  console.log("postSignup");
+
+  const cname = req.body.companyName;
+  const cprofile = req.body.profile;
+  const city = req.body.city;
+  const username = req.body.username;
+  const password = req.body.password;
+
+  const query = `INSERT INTO COMPANY (CNAME, Cprofile, City, Cstatus, Pass, CregDate)
+  VALUES (?, ?, ?, 'pending', ?, NOW())`;
+
+  pool
+   .execute(query, [cname, cprofile, city, password])
+   .then(([rows, fields]) => {
+      console.log(rows);
+      res.status(200).send({ status: "Registered Successfully" });
+    })
+   .catch((err) => console.log(err));
+}
+
 exports.is_auth = (req, res, next) => {
   let tok = "";
   let valid = false;

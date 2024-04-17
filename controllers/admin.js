@@ -81,7 +81,7 @@ exports.getPendingJobs = (req, res, next) => {
 exports.getUpdates = (req, res, next) => {
   console.log("Admin Messages");
   pool
-    .execute("SELECT * FROM MESSAGES")
+    .execute("SELECT MID, AID, TITLE, CONTENT, LINK FROM MESSAGES")
     .then(([rows, fields]) => {
       col_names = fields.map((val) => val.name);
       const data = { fields: col_names, rows: rows };
@@ -104,6 +104,21 @@ exports.postUpdates = (req, res, next) => {
     .execute("INSERT INTO MESSAGES (TITLE, CONTENT, LINK, AID) VALUES (?, ?, ?, ?)", [title, content, link, aid])
     .then(([rows, fields]) => {
       res.status(200).send({ status: "inserted" });
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+exports.removeUpdate = (req, res, next) => {
+  console.log("/a/removeUpdate");
+
+  const mid = req.body.MID;
+
+  pool
+    .execute("DELETE FROM MESSAGES WHERE MID =?", [mid])
+    .then(([rows, fields]) => {
+      res.status(200).send({ status: "deleted" });
     })
     .catch((err) => {
       console.error(err);

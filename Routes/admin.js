@@ -17,6 +17,7 @@ router.get("/updates", adminController.getUpdates);
 router.get("/profile", adminController.getAdminProfile);
 
 router.post("/updates", adminController.postUpdates);
+router.post("/removeUpdate", adminController.removeUpdate);
 router.post("/updateProfile", adminController.postUpdateProfile);
 router.post("/approve", adminController.postApproveJob);
 router.post("/reject", adminController.postRejectJob);

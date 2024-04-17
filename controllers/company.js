@@ -115,6 +115,11 @@ exports.postJob = (req, res, next) => {
   const gender = req.body.Gender;
   const cid = req.body.user_id;
   return res.status(200).send({ status: "Sucessfully sent job details" });
+
+  // let jid;
+  // pool
+  //   .execute("SELECT MAX(JID) FROM JOB");
+
   pool
     .execute(
       "INSERT INTO JOB (CID, JROLE, JSAL, JDESC, JSTART, JDUR, JSTATUS) VALUES (?,?,?,?,?,?)",
