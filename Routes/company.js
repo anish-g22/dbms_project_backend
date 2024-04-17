@@ -16,7 +16,12 @@ router.get("/interviews", companyController.getInterviews);
 
 router.post("/updateProfile", companyController.postUpdateProfile);
 router.post("/addjob", companyController.postJob);
+<<<<<<< HEAD
 // router.post("/studentslist", companyController.postStudentList);
+=======
+router.post("/studentslist", companyController.getApplicants);
+router.post("/interviewdetails", companyController.getInterviewDetails);
+>>>>>>> 88397aea784b476817587c2fa4192e1da37a9936
 router.post("/applicants", companyController.postApplicants);
 
 module.exports = router;
