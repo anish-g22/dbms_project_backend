@@ -2,13 +2,13 @@ const pool = require("../util/connectionPool");
 
 exports.getHome = (req, res, next) => {
   console.log("Connection to admin path established succesfully");
-  return res.status(200).send({ status: "valid", role: "admin" });
+  res.status(200).send({ status: "valid", role: "admin" });
 };
 
 exports.getAllStudents = (req, res, next) => {
   console.log("Connection to /a/students path established succesfully");
   pool
-    .execute("SELECT * FROM ADMINISTRATOR")
+    .execute("SELECT SROLL, SNAME, CGPA, EMAIL, GENDER, ANY_ARREARS AS ARREARS, PR_ID, BR_ID, OFFER_ID, OFFER_LOC FROM STUDENT")
     .then(([rows, fields]) => {
       col_names = fields.map((val) => val.name);
       const data = { fields: col_names, rows: rows };
@@ -23,7 +23,7 @@ exports.getAdminProfile = (req, res, next) => {
   console.log("Connection to /a/profile path established succesfully");
   const aid = req.body.user_id;
   pool
-    .execute("SELECT * FROM ADMINISTRATOR WHERE aid = ?", [aid])
+    .execute("SELECT AID, ANAME, AROLE FROM ADMINISTRATOR WHERE aid = ?", [aid])
     .then(([rows, fields]) => {
       col_names = fields.map((val) => val.name);
       const data = { fields: col_names, rows: rows };
@@ -147,4 +147,27 @@ exports.postRejectJob = (req, res, next) => {
     ])
     .then(([rows, fields]) => {console.log("job updated")})
     .catch((err) => console.log(err));
+};
+
+exports.getOffers = (req, res, next) => {
+  console.log("/a/getOffers");
+  const query = `
+  SELECT S.SNAME, C.CNAME, J.JROLE FROM OFFERS O
+  INNER JOIN STUDENT S
+    ON O.SROLL = S.SROLL
+  INNER JOIN JOB J
+    ON O.JID = J.JID
+  INNER JOIN COMPANY C
+    ON J.CID = C.CID`;
+
+  pool
+    .execute(query)
+    .then(([rows, fields]) => {
+      col_names = fields.map((val) => val.name);
+      const data = { fields: col_names, rows: rows };
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 };

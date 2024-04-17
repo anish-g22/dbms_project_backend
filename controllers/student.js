@@ -25,7 +25,7 @@ exports.getError = (req, res, next) => {
 exports.getUpdates = (req, res, next) => {
   console.log("Student Updates");
   pool
-    .execute("SELECT MID 'SNO', CONTENT 'Update' FROM MESSAGES")
+    .execute("SELECT MID, TITLE, CONTENT, LINK FROM MESSAGES")
     .then(([rows, fields]) => {
       col_names = fields.map((val) => val.name);
       const data = { fields: col_names, rows: rows };
@@ -157,6 +157,29 @@ exports.getInterviews = (req, res, next) => {
     .catch((err) => console.log(err));
 };
 
+exports.getStudentOffers = (req, res, next) => {
+  console.log("Get Student Offers");
+  const sroll = req.body.user_id;
+
+  const query = `
+  SELECT S.SNAME, C.CNAME, J.JROLE FROM OFFERS O
+  INNER JOIN STUDENT S
+    ON O.SROLL = S.SROLL
+  INNER JOIN JOB J
+    ON O.JID = J.JID
+  INNER JOIN COMPANY C
+    ON J.CID = C.CID
+  WHERE O.SROLL =?`;
+
+  pool
+    .execute(query, [sroll])
+    .then(([rows, fields]) => {
+      col_names = fields.map((val) => val.name);
+      const data = { fields: col_names, rows: rows };
+      res.status(200).send(data);
+    })
+    .catch((err) => console.log(err));
+}
 exports.getAuth = (req, res, next) => {
   console.log("Auth Page Requested\n");
   res.render("Auth/login");
