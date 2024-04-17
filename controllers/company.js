@@ -154,15 +154,23 @@ exports.postJob = (req, res, next) => {
     });
 };
 
-exports.postStudentList = (req, res, next) => {
+exports.getApplicants = (req, res, next) => {
   console.log("Post request for Students List");
   console.log(req.body);
   const jid = req.body.jid;
   pool
-    .execute("SELECT * FROM JOB WHERE JID = ?", [jid])
+    .execute("SELECT * FROM APPLICATION WHERE JID = ?", [jid])
     .then(([rows, fields]) => {
       console.log(rows);
       res.status(200).send({ status: "Succesffully sent job applicants" });
     })
     .catch((err) => console.log(err));
 };
+
+exports.getInterviewDetails = (req,res,next)=>{
+  console.log("Post request for Interview Details")
+  console.log(req,body);
+  const jid = req.body.JID;
+  return res.status(200).send({status:"Valid"});
+  // pool.execute()
+}
