@@ -179,8 +179,9 @@ exports.getInterviewDetails = (req, res, next) => {
       [jid]
     )
     .then(([rows, fields]) => {
-      rows[0].INTERVIEW_DATE =
-        rows[0].INTERVIEW_DATE.toISOString().split("T")[0];
+      if (rows[0].INTERVIEW_DATE)
+      {rows[0].INTERVIEW_DATE =
+        rows[0].INTERVIEW_DATE.toISOString().split("T")[0];}
       console.log(rows);
       res.status(200).send(rows[0]);
     })
@@ -190,7 +191,7 @@ exports.getInterviewDetails = (req, res, next) => {
 exports.postInterviewDetails = (req, res, next) => {
   console.log("Post request for Update Interview Details");
   console.log(req.body);
-  const jid = req.body.user_id;
+  const jid = req.body.JID;
   const itime = req.body.INTERVIEW_TIME || "";
   const idate = req.body.INTERVIEW_DATE || "";
   if (!idate) {
@@ -211,6 +212,33 @@ exports.postInterviewDetails = (req, res, next) => {
     })
     .catch((err) => console.log(err));
 };
+
+exports.postInterviewSelected = (req, res, next) => {
+  console.log("Post request for Fetching Interview List Details");
+  console.log(req.body);
+  res.status(200).send({ status: "valid" });
+}
+
+exports.getInterviewListDetails = (req, res, next) => {
+  console.log("Post request for Fetching Interview List Details");
+  console.log(req.body);
+  const jid = req.body.JID;
+  // return res.status(200).send({ status: "Valid" });
+  pool
+    .execute(
+      "SELECT INT_ID, APP_ID, SROLL ROLL_NO, IDATE INTERVIEW_DATE, ITIME INTERVIEW_TIME FROM INTERVIEW  WHERE JID = ?",
+      [jid]
+    )
+    .then(([rows, fields]) => {
+      if (rows[0].INTERVIEW_DATE)
+      {rows[0].INTERVIEW_DATE =
+        rows[0].INTERVIEW_DATE.toISOString().split("T")[0];}
+      console.log(rows);
+      res.status(200).send(rows[0]);
+    })
+    .catch((err) => console.log(err));
+};
+
 
 exports.registerCompany = (req, res, next) => {
   console.log("/c/registerCompany");

@@ -19,6 +19,8 @@ router.post("/addjob", companyController.postJob);
 // router.post("/studentslist", companyController.postStudentList);
 router.post("/studentslist", companyController.getApplicants);
 router.post("/interviewdetails", companyController.getInterviewDetails);
+router.post("/interviewselected", companyController.postInterviewSelected);
+router.post("/interviewlist", companyController.getInterviewListDetails);
 router.post("/updateinterviewdetails", companyController.postInterviewDetails);
 router.post("/applicants", companyController.postApplicants);
 router.post("/registerCompany", companyController.registerCompany);
