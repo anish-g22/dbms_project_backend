@@ -101,11 +101,6 @@ exports.getInterviews = (req, res, next) => {
     });
 };
 
-<<<<<<< HEAD
-
-
-
-=======
 exports.postJob = (req, res, next) => {
   console.log("Hey");
   console.log(req.body);
@@ -167,8 +162,8 @@ exports.getApplicants = (req, res, next) => {
     .execute("SELECT * FROM APPLICATION WHERE JID = ?", [jid])
     .then(([rows, fields]) => {
       console.log(rows);
-      col_names = fields.map(field =>field.name);
-      res.status(200).send({rows: rows, fields: col_names});
+      col_names = fields.map((field) => field.name);
+      res.status(200).send({ rows: rows, fields: col_names });
     })
     .catch((err) => console.log(err));
 };
@@ -177,7 +172,72 @@ exports.getInterviewDetails = (req, res, next) => {
   console.log("Post request for Interview Details");
   console.log(req.body);
   const jid = req.body.JID;
-  return res.status(200).send({status:"Valid"});
-  // pool.execute()
-}
->>>>>>> 88397aea784b476817587c2fa4192e1da37a9936
+  // return res.status(200).send({ status: "Valid" });
+  pool
+    .execute(
+      "SELECT IDATE INTERVIEW_DATE, ITIME INTERVIEW_TIME FROM JOB  WHERE JID = ?",
+      [jid]
+    )
+    .then(([rows, fields]) => {
+      rows[0].INTERVIEW_DATE =
+        rows[0].INTERVIEW_DATE.toISOString().split("T")[0];
+      console.log(rows);
+      res.status(200).send(rows[0]);
+    })
+    .catch((err) => console.log(err));
+};
+
+exports.postInterviewDetails = (req, res, next) => {
+  console.log("Post request for Update Interview Details");
+  console.log(req.body);
+  const jid = req.body.user_id;
+  const itime = req.body.INTERVIEW_TIME || "";
+  const idate = req.body.INTERVIEW_DATE || "";
+  if (!idate) {
+    return res.status(400).send({ status: "Invalid" });
+  }
+  // console.log(idate)
+  // return res.status(200).send({ status: "Valid" });
+
+  pool
+    .execute("UPDATE JOB SET IDATE = ?, ITIME = ?  WHERE JID = ?", [
+      idate,
+      itime,
+      jid,
+    ])
+    .then(([rows, fields]) => {
+      console.log(rows);
+      res.status(200).send({ status: "Valid" });
+    })
+    .catch((err) => console.log(err));
+};
+
+exports.registerCompany = (req, res, next) => {
+  console.log("/c/registerCompany");
+
+  const CNAME = req.body.companyName;
+  const CITY = req.body.city;
+  const CPROFILE = req.body.profile;
+  const PASSWORD = req.body.password;
+  const username = req.body.username;
+
+  // Hash the password using bcrypt
+  const hashedPassword = bcrypt.hash(PASSWORD, 11).then((res) => {
+    pool.execute("CALL addCompany(?, ?, ?, ?)", [
+      CNAME,
+      CITY,
+      CPROFILE,
+      hashedPassword,
+    ]);
+
+    pool
+      .execute("SELECT * FROM APPLICATION WHERE JID = ?", [jid])
+      .then(([rows, fields]) => {
+        console.log(rows);
+        res.status(200).send({ status: "Succesffully registered company" });
+      })
+      .catch((err) => console.log(err));
+  });
+
+  // Execute the stored procedure
+};
