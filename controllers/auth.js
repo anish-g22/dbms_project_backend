@@ -2,6 +2,7 @@ const pool = require("../util/connectionPool");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const tok_decode = require("jwt-decode");
+const dbName = process.env.DB_NAME;
 
 exports.postLogin = (req, res, next) => {
   console.log(req.headers);
@@ -44,26 +45,85 @@ exports.postLogin = (req, res, next) => {
   // res.json({ token: "authenticated" });
 };
 
-exports.postSignup = (req, res, next) => {
-  console.log("postSignup");
+// exports.postSignup = (req, res, next) => {
+//   console.log("postSignup");
 
-  const cname = req.body.companyName;
-  const cprofile = req.body.profile;
-  const city = req.body.city;
-  const username = req.body.username;
-  const password = req.body.password;
+//   const cname = req.body.companyName;
+//   const cprofile = req.body.profile;
+//   const city = req.body.city;
+//   const username = req.body.username;
+//   const password = req.body.password;
 
-  const query = `INSERT INTO COMPANY (CNAME, Cprofile, City, Cstatus, Pass, CregDate)
-  VALUES (?, ?, ?, 'pending', ?, NOW())`;
+//   const query = `INSERT INTO COMPANY (CNAME, Cprofile, City, Cstatus, Pass, CregDate)
+//   VALUES (?, ?, ?, 'pending', ?, NOW())`;
 
-  pool
-   .execute(query, [cname, cprofile, city, password])
-   .then(([rows, fields]) => {
-      console.log(rows);
-      res.status(200).send({ status: "Registered Successfully" });
+//   pool
+//    .execute(query, [cname, cprofile, city, password])
+//    .then(([rows, fields]) => {
+//       console.log(rows);
+//       res.status(200).send({ status: "Registered Successfully" });
+//     })
+//    .catch((err) => console.log(err));
+// }
+
+exports.registerCompany = (req, res, next) => {
+  console.log("/registerCompany");
+
+  const CNAME = req.body.companyName;
+  const CITY = req.body.city;
+  const CPROFILE = req.body.profile;
+  const PASSWORD = req.body.password;
+  // const USERNAME = req.body.username;
+
+  // const query = `SELECT AUTO_INCREMENT
+  // FROM INFORMATION_SCHEMA.TABLES
+  // WHERE TABLE_SCHEMA = '${dbName}'
+  // AND TABLE_NAME = 'COMPANY'`;
+  const query = `SELECT MAX(CID) cid FROM COMPANY`;
+  // INSERT INTO COMPANY (CNAME, City, Cprofile, Cstatus, Pass, CRegDate)
+  //   VALUES (cname, city, cprofile, 'pending', password, cregdate);
+
+  const user_query = ` INSERT INTO USERS (USER_ID, USER_PASS, USER_ROLE)
+    VALUES (?, ?, ?)`;
+
+  console.log(query);
+  // Hash the password using bcrypt
+  bcrypt.hash(PASSWORD, 11)
+    .then((result) => {
+      console.log(result);
+      pool
+      .execute("CALL addCompany(?, ?, ?, ?)", [
+        CNAME,
+        CITY,
+        CPROFILE,
+        PASSWORD,
+      ])
+      .then((result_) => {
+        console.log(result_)
+        pool.execute(query,[])
+        .then(([rows, fields])=> {
+          console.log(rows)
+          pool
+            .execute(user_query, [rows[0]['cid'] + 1, result, 'company'])
+            .then((result) => {
+            console.log("User added");
+            res.status(200).send({ status: "Company registered Successfully", cid: rows[0]['cid'] + 1 });
+             })
+            .catch((err) => console.log(err));      
     })
-   .catch((err) => console.log(err));
-}
+    .catch((err)=>console.log(err));  
+      })
+      .catch((err) => console.log(err));
+
+      
+  })
+  .catch((err) => console.log(err));
+  ;
+  
+
+  
+  // Execute the stored procedure
+};
 
 exports.is_auth = (req, res, next) => {
   let tok = "";

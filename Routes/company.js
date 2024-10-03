@@ -14,16 +14,17 @@ router.get("/profile", companyController.getProfile);
 router.get("/branches", companyController.getBranches);
 router.get("/interviews", companyController.getInterviews);
 
-router.post("/updateProfile", companyController.postUpdateProfile);
 router.post("/addjob", companyController.postJob);
 // router.post("/studentslist", companyController.postStudentList);
 router.post("/studentslist", companyController.getApplicants);
 router.post("/interviewdetails", companyController.getInterviewDetails);
 router.post("/interviewselected", companyController.postInterviewSelected);
-router.post("/interviewrejected", companyController.postInterviewRejected);
+router.post("/offeredjob", companyController.postOfferSelected);
+router.post("/rejected", companyController.postInterviewRejected);
 router.post("/interviewlist", companyController.getInterviewListDetails);
 router.post("/updateinterviewdetails", companyController.postInterviewDetails);
 router.post("/applicants", companyController.postApplicants);
-router.post("/registerCompany", companyController.registerCompany);
+// router.post("/registerCompany", companyController.registerCompany);
+router.post("/offerlist", companyController.postOfferList);
 
 module.exports = router;

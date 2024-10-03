@@ -68,8 +68,6 @@ exports.getBranches = (req, res, next) => {
     });
 };
 
-exports.postUpdateProfile = (req, res, next) => {};
-
 exports.postApplicants = (req, res, next) => {
   console.log("postApplicants");
   const jid = req.body.JID;
@@ -228,7 +226,68 @@ exports.postInterviewSelected = (req, res, next) => {
     ])
     .then(([rows, fields]) => {
       console.log(rows);
-      res.status(200).send({ status: "valid" });
+      pool
+        .execute(
+          "SELECT SROLL FROM APPLICATION WHERE APP_ID = ?",
+          [req.body.APP_ID]
+        )
+        .then(([rows, fields]) => {
+          console.log(rows)
+          pool
+            .execute(
+              "INSERT INTO INTERVIEW (APP_ID, SROLL, JID) VALUES (?, ?, ?)",
+              [
+                req.body.APP_ID,
+                rows[0]["SROLL"],
+                req.body.user_id
+              ]
+            )
+            .then(([rows, fields]) => {
+              console.log(rows);
+              res.status(200).send({ status: "valid" });
+            })
+            .catch((err) => console.log(err));
+        });
+    })
+    .catch((err) => console.log(err));
+};
+
+exports.postOfferSelected = (req, res, next) => {
+  console.log("Post request for Offering Applicant");
+  console.log(req.body);
+  // res.status(200).send({ status: "valid" });
+  pool
+    .execute("UPDATE APPLICATION SET APP_STATUS = ? WHERE APP_ID = ?", [
+      "offered",
+      req.body.APP_ID,
+    ])
+    .then(([rows, fields]) => {
+      console.log(rows);
+      pool
+        .execute(
+          "SELECT SROLL, INT_ID FROM INTERVIEW WHERE APP_ID = ? AND JID = ?",
+          [
+            req.body.APP_ID,
+            req.body.user_id
+          ]
+        )
+        .then(([rows, fields]) => {
+          console.log(rows)
+          pool
+            .execute(
+              "INSERT INTO OFFERS (SROLL, INT_ID, JID) VALUES (?, ?, ?)",
+              [
+                rows[0]["SROLL"],
+                rows[0]["INT_ID"],
+                req.body.user_id
+              ]
+            )
+            .then(([rows, fields]) => {
+              console.log(rows);
+              res.status(200).send({ status: "valid" });
+            })
+            .catch((err) => console.log(err));
+        });
     })
     .catch((err) => console.log(err));
 };
@@ -265,37 +324,24 @@ exports.getInterviewListDetails = (req, res, next) => {
           rows[0].INTERVIEW_DATE.toISOString().split("T")[0];
       }
       console.log(rows);
-      res.status(200).send(rows[0]);
+      col_names = fields.map((field) => field.name);
+      res.status(200).send({rows:rows, fields:col_names});
     })
     .catch((err) => console.log(err));
 };
 
-exports.registerCompany = (req, res, next) => {
-  console.log("/c/registerCompany");
 
-  const CNAME = req.body.companyName;
-  const CITY = req.body.city;
-  const CPROFILE = req.body.profile;
-  const PASSWORD = req.body.password;
-  const username = req.body.username;
+exports.postOfferList = (req, res, next) => {
+  console.log("/c/postOfferList");
+  const jid = req.body.JID;
+  const status = ['offered', 'accepted', 'rejected'];
 
-  // Hash the password using bcrypt
-  const hashedPassword = bcrypt.hash(PASSWORD, 11).then((res) => {
-    pool.execute("CALL addCompany(?, ?, ?, ?)", [
-      CNAME,
-      CITY,
-      CPROFILE,
-      hashedPassword,
-    ]);
-
-    pool
-      .execute("SELECT * FROM APPLICATION WHERE JID = ?", [jid])
-      .then(([rows, fields]) => {
-        console.log(rows);
-        res.status(200).send({ status: "Succesffully registered company" });
-      })
-      .catch((err) => console.log(err));
-  });
-
-  // Execute the stored procedure
+  pool
+    .execute("SELECT * FROM APPLICATION WHERE JID = ? AND APP_STATUS IN (?, ?, ?)", [jid, ...status])
+    .then(([rows, fields]) => {
+      console.log(rows);
+      col_names = fields.map((field) => field.name);
+      res.status(200).send({ rows: rows, fields: col_names });
+    })
+    .catch((err) => console.log(err));
 };

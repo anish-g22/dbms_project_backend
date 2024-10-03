@@ -25,7 +25,7 @@ app.use(bodyParser.json());
 
 app.use("/update", authController.updatePass);
 app.post("/login", authController.postLogin);
-app.post("/registerCompany", authController.postSignup);
+app.post("/registerCompany", authController.registerCompany);
 app.use(authController.is_auth);
 app.use("/s", authController.is_student, studentRoutes);
 app.use("/c", authController.is_company, companyRoutes);

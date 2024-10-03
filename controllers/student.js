@@ -161,15 +161,26 @@ exports.getStudentOffers = (req, res, next) => {
   console.log("Get Student Offers");
   const sroll = req.body.user_id;
 
+  // const query = `
+  // SELECT S.SNAME, C.CNAME, J.JROLE FROM OFFERS O
+  // INNER JOIN STUDENT S
+  //   ON O.SROLL = S.SROLL
+  // INNER JOIN JOB J
+  //   ON O.JID = J.JID
+  // INNER JOIN COMPANY C
+  //   ON J.CID = C.CID
+  // WHERE O.SROLL =?`;
   const query = `
-  SELECT S.SNAME, C.CNAME, J.JROLE FROM OFFERS O
+  SELECT APP.APP_ID, C.CNAME, J.JROLE, APP.APP_STATUS FROM APPLICATION APP
   INNER JOIN STUDENT S
-    ON O.SROLL = S.SROLL
+    ON APP.SROLL = S.SROLL
   INNER JOIN JOB J
-    ON O.JID = J.JID
+    ON APP.JID = J.JID
   INNER JOIN COMPANY C
     ON J.CID = C.CID
-  WHERE O.SROLL =?`;
+  WHERE APP.SROLL =?
+    AND APP.APP_STATUS IN ('offered', 'accepted', 'rejected')
+  `;
 
   pool
     .execute(query, [sroll])
@@ -190,12 +201,43 @@ exports.postApply = (req, res, next) => {
   console.log("Student Apply");
   pool
     .execute(
-      'INSERT INTO APPLICATION (SROLL, JID, APP_STATUS) VALUES (?, ?, "pending")',
-      [req.body.user_id, req.body.jid]
+      'INSERT INTO APPLICATION (SROLL, JID, APP_STATUS) VALUES (?, ?, ?)',  
+      [req.body.user_id, req.body.jid, 'pending'] 
     )
     .then(([rows, fields]) => {
-      console.log(rows)
+      console.log(rows);
       res.status(200).send({ status: "Applied Successfully" });
     })
-    .catch(err=>console.log(err));
+    .catch(err => console.log(err));
 };
+
+exports.postOfferAccepted = (req, res, next) => {
+  console.log("Offer Accepted");
+  const appId = req.body.APP_ID;
+  const sroll = req.body.user_id;
+
+  pool
+    .execute("UPDATE APPLICATION SET APP_STATUS = 'accepted' WHERE APP_ID = ? AND SROLL = ?", [appId, sroll])
+    .then(([rows, fields]) => {
+      pool
+       .execute("UPDATE APPLICATION SET APP_STATUS = 'rejected' WHERE APP_ID <> ? AND SROLL = ?", [appId, sroll])
+       .then(([rows, fields]) => {
+          res.status(200).send({ status: "Offer Accepted and Offered" });
+        })
+        .catch((err) => console.log(err));
+    })
+    .catch((err) => console.log(err));
+}
+
+exports.postOfferRejected = (req, res, next) => {
+  console.log("Offer Rejected");
+  const appId = req.body.APP_ID;
+  const sroll = req.body.user_id;
+
+  pool
+    .execute("UPDATE APPLICATION SET APP_STATUS = 'rejected' WHERE APP_ID = ? AND SROLL = ?", [appId, sroll])
+    .then(([rows, fields]) => {
+      res.status(200).send({ status: "Offer Rejected" });
+    })
+    .catch((err) => console.log(err));
+}

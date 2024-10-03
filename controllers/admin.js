@@ -152,13 +152,15 @@ exports.postRejectJob = (req, res, next) => {
 exports.getOffers = (req, res, next) => {
   console.log("/a/getOffers");
   const query = `
-  SELECT S.SNAME, C.CNAME, J.JROLE FROM OFFERS O
+  SELECT S.SROLL, S.SNAME, C.CNAME, J.JROLE, APP.APP_STATUS FROM APPLICATION APP
   INNER JOIN STUDENT S
-    ON O.SROLL = S.SROLL
+    ON APP.SROLL = S.SROLL
   INNER JOIN JOB J
-    ON O.JID = J.JID
+    ON APP.JID = J.JID
   INNER JOIN COMPANY C
-    ON J.CID = C.CID`;
+    ON J.CID = C.CID
+  WHERE APP.APP_STATUS IN ('offered', 'accepted', 'rejected')
+  `;
 
   pool
     .execute(query)

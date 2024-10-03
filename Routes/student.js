@@ -18,6 +18,8 @@ router.get("/user", studentController.getStudentProfiles);
 router.get("/offers", studentController.getStudentOffers);
 router.post("/updateProfile", studentController.postStudentProfile);
 router.post("/apply", studentController.postApply);
+router.post("/offeraccepted", studentController.postOfferAccepted);
+router.post("/offerrejected", studentController.postOfferRejected);
 
 module.exports = router;
 
