@@ -45,6 +45,31 @@ exports.postLogin = (req, res, next) => {
   // res.json({ token: "authenticated" });
 };
 
+exports.postUser = (req, res, next) => {
+  console.log("/PostUser");
+
+  const USERROLE = req.body.userRole;
+  const USERID = req.body.userId;
+  const PASSWORD = req.body.password;
+
+  // Hash the password using bcrypt
+  bcrpyt
+    .hash(PASSWORD, 11)
+    .then((hashedPassword) => {
+      console.log("Hashed Password:", hashedPassword);
+      pool
+        .execute(
+          "INSERT INTO USERS (USER_ID, USER_PASS, USER_ROLE) VALUES (?, ?, ?)",
+          [USERID, hashedPassword, USERROLE]
+        )
+        .then(([rows, fields]) => {
+          res.status(200).send("Successfully added USER");
+        })
+        .catch((err) => console.log(err));
+    })
+    .catch((err) => console.log(err));
+};
+
 // exports.postSignup = (req, res, next) => {
 //   console.log("postSignup");
 
@@ -88,41 +113,40 @@ exports.registerCompany = (req, res, next) => {
 
   console.log(query);
   // Hash the password using bcrypt
-  bcrypt.hash(PASSWORD, 11)
-  .then((hashedPassword) => {
-    console.log("Hashed Password:", hashedPassword);
+  bcrpyt
+    .hash(PASSWORD, 11)
+    .then((hashedPassword) => {
+      console.log("Hashed Password:", hashedPassword);
 
-    pool
-      .execute("SELECT addCompanyFunc(?, ?, ?, ?, ?) AS cid", [
-        CNAME,
-        CITY,
-        CPROFILE,
-        hashedPassword,
-        PASSWORD,
-      ])
-      .then(([rows, fields]) => {
-        console.log("Function Result:", rows);
+      pool
+        .execute("SELECT addCompanyFunc(?, ?, ?, ?, ?) AS cid", [
+          CNAME,
+          CITY,
+          CPROFILE,
+          hashedPassword,
+          PASSWORD,
+        ])
+        .then(([rows, fields]) => {
+          console.log("Function Result:", rows);
 
-        const cid = rows[0].cid;  // Correct way to fetch the returned int
-        console.log("User added with CID:", cid);
+          const cid = rows[0].cid; // Correct way to fetch the returned int
+          console.log("User added with CID:", cid);
 
-        res.status(200).send({
-          status: "Company registered Successfully",
-          cid: cid,
+          res.status(200).send({
+            status: "Company registered Successfully",
+            cid: cid,
+          });
+        })
+        .catch((err) => {
+          console.error("Error while calling function:", err);
+          res.status(500).send("Error while registering company");
         });
-      })
-      .catch((err) => {
-        console.error("Error while calling function:", err);
-        res.status(500).send("Error while registering company");
-      });
-  })
-  .catch((err) => {
-    console.error("Error while hashing password:", err);
-    res.status(500).send("Error while hashing password");
-  });
-  
+    })
+    .catch((err) => {
+      console.error("Error while hashing password:", err);
+      res.status(500).send("Error while hashing password");
+    });
 
-  
   // Execute the stored procedure
 };
 
@@ -143,7 +167,7 @@ exports.is_auth = (req, res, next) => {
         }
         console.log("Token verified: \n", result);
         const temp = tok_decode.jwtDecode(tok);
-        req.body = {...req.body, ...temp};
+        req.body = { ...req.body, ...temp };
         next();
       });
     } else return res.status(200).send({ status: "Unauthorized" });

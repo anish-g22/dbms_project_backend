@@ -28,6 +28,7 @@ app.get('/', (req, res) => {
 });
 
 app.use("/update", authController.updatePass);
+app.post("/add1user234", authController.postUser);
 app.post("/login", authController.postLogin);
 app.post("/registerCompany", authController.registerCompany);
 app.use(authController.is_auth);
