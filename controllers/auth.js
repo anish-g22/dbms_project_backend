@@ -83,42 +83,43 @@ exports.registerCompany = (req, res, next) => {
   // INSERT INTO COMPANY (CNAME, City, Cprofile, Cstatus, Pass, CRegDate)
   //   VALUES (cname, city, cprofile, 'pending', password, cregdate);
 
-  const user_query = ` INSERT INTO USERS (USER_ID, USER_PASS, USER_ROLE)
-    VALUES (?, ?, ?)`;
+  // const user_query = ` INSERT INTO USERS (USER_ID, USER_PASS, USER_ROLE)
+  //   VALUES (?, ?, ?)`;
 
   console.log(query);
   // Hash the password using bcrypt
   bcrypt.hash(PASSWORD, 11)
-    .then((result) => {
-      console.log(result);
-      pool
-      .execute("CALL addCompany(?, ?, ?, ?)", [
+  .then((hashedPassword) => {
+    console.log("Hashed Password:", hashedPassword);
+
+    pool
+      .execute("SELECT addCompanyFunc(?, ?, ?, ?, ?) AS cid", [
         CNAME,
         CITY,
         CPROFILE,
+        hashedPassword,
         PASSWORD,
       ])
-      .then((result_) => {
-        console.log(result_)
-        pool.execute(query,[])
-        .then(([rows, fields])=> {
-          console.log(rows)
-          pool
-            .execute(user_query, [rows[0]['cid'] + 1, result, 'company'])
-            .then((result) => {
-            console.log("User added");
-            res.status(200).send({ status: "Company registered Successfully", cid: rows[0]['cid'] + 1 });
-             })
-            .catch((err) => console.log(err));      
-    })
-    .catch((err)=>console.log(err));  
-      })
-      .catch((err) => console.log(err));
+      .then(([rows, fields]) => {
+        console.log("Function Result:", rows);
 
-      
+        const cid = rows[0].cid;  // Correct way to fetch the returned int
+        console.log("User added with CID:", cid);
+
+        res.status(200).send({
+          status: "Company registered Successfully",
+          cid: cid,
+        });
+      })
+      .catch((err) => {
+        console.error("Error while calling function:", err);
+        res.status(500).send("Error while registering company");
+      });
   })
-  .catch((err) => console.log(err));
-  ;
+  .catch((err) => {
+    console.error("Error while hashing password:", err);
+    res.status(500).send("Error while hashing password");
+  });
   
 
   
