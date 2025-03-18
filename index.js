@@ -32,6 +32,6 @@ app.use("/c", authController.is_company, companyRoutes);
 app.use("/a", authController.is_admin, adminRoutes);
 app.use(errorController.get404);
 
-app.listen(process.env.PORT || 3000, () => {
+app.listen(process.env.PORT || 3000, '0.0.0.0', () => {
   console.log("server listening on port: 3000");
 });
