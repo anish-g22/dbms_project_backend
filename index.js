@@ -23,6 +23,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 // app.use(express.static(path.join(__dirname, "public")));
 
+app.get('/', (req, res) => {
+  res.send('Hello from Render!');
+});
+
 app.use("/update", authController.updatePass);
 app.post("/login", authController.postLogin);
 app.post("/registerCompany", authController.registerCompany);
